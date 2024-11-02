@@ -1,0 +1,13 @@
+<!-- templates/create_list.html -->
+{% extends "base.html" %}
+{% block title %}Create New List{% endblock %}
+{% block content %}
+<h2>Create New List</h2>
+<form method="post">
+    <p>
+        <label>List Title:</label><br>
+        <input type="text" name="title" required>
+    </p>
+    <p><input type="submit" value="Create List"></p>
+</form>
+{% endblock %}

@@ -1,0 +1,15 @@
+<!-- templates/list.html -->
+{% extends "base.html" %}
+{% block title %}{{ list.title }}{% endblock %}
+{% block content %}
+<h2>{{ list.title }}</h2>
+<ul>
+    {% for item in items %}
+    {% include 'item.html' with context %}
+    {% else %}
+    <li>No items yet.</li>
+    {% endfor %}
+</ul>
+<p><a href="{{ url_for('add_item', list_id=list.id) }}">Add New Item</a></p>
+<p><a href="{{ url_for('dashboard') }}">Back to Dashboard</a></p>
+{% endblock %}

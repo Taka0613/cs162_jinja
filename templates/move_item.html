@@ -1,0 +1,20 @@
+<!-- templates/move_item.html -->
+{% extends "base.html" %}
+{% block title %}Move Item - {{ item.title }}{% endblock %}
+{% block content %}
+<h2>Move Item - {{ item.title }}</h2>
+<form method="post">
+    <p>
+        <label>Select New List:</label><br>
+        <select name="new_list_id" required>
+            {% for list in lists %}
+            <option value="{{ list.id }}" {% if list.id==item.list_id %}selected{% endif %}>
+                {{ list.title }}
+            </option>
+            {% endfor %}
+        </select>
+    </p>
+    <p><input type="submit" value="Move Item"></p>
+</form>
+<p><a href="{{ url_for('view_list', list_id=item.list_id) }}">Back to List</a></p>
+{% endblock %}

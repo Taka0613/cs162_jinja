@@ -1,0 +1,23 @@
+/* Existing styles... */
+
+.completed {
+    text-decoration: line-through;
+    color: gray;
+}
+
+.toggler {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+li ul {
+    margin-left: 20px;
+}
+
+li ul.collapsed {
+    display: none;
+}
+

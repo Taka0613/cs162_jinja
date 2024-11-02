@@ -1,0 +1,13 @@
+<!-- templates/edit_list.html -->
+{% extends "base.html" %}
+{% block title %}Edit List - {{ list.title }}{% endblock %}
+{% block content %}
+<h2>Edit List - {{ list.title }}</h2>
+<form method="post">
+    <p>
+        <label>List Title:</label><br>
+        <input type="text" name="title" value="{{ list.title }}" required>
+    </p>
+    <p><input type="submit" value="Update List"></p>
+</form>
+{% endblock %}

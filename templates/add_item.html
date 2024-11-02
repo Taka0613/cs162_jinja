@@ -1,0 +1,22 @@
+<!-- templates/add_item.html -->
+{% extends "base.html" %}
+{% block title %}Add Item to {{ list.title }}{% endblock %}
+{% block content %}
+<h2>Add Item to {{ list.title }}</h2>
+<form method="post">
+    <p>
+        <label>Item Title:</label><br>
+        <input type="text" name="title" required>
+    </p>
+    <p>
+        <label>Parent Item:</label><br>
+        <select name="parent_item_id">
+            <option value="">None (Top-level item)</option>
+            {% for parent in parent_items %}
+            <option value="{{ parent.id }}">{{ parent.title }}</option>
+            {% endfor %}
+        </select>
+    </p>
+    <p><input type="submit" value="Add Item"></p>
+</form>
+{% endblock %}

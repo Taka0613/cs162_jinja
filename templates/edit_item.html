@@ -1,0 +1,14 @@
+<!-- templates/edit_item.html -->
+{% extends "base.html" %}
+{% block title %}Edit Item - {{ item.title }}{% endblock %}
+{% block content %}
+<h2>Edit Item - {{ item.title }}</h2>
+<form method="post">
+    <p>
+        <label>Item Title:</label><br>
+        <input type="text" name="title" value="{{ item.title }}" required>
+    </p>
+    <p><input type="submit" value="Update Item"></p>
+</form>
+<p><a href="{{ url_for('view_list', list_id=item.list.id) }}">Back to List</a></p>
+{% endblock %}
