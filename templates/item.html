@@ -22,7 +22,9 @@
     {% if item.children %}
     <ul>
         {% for child in item.children %}
-        {% include 'item.html' with context({'item': child}) %}
+        {% set item = child %}
+        {% include 'item.html' %}
+
         {% endfor %}
     </ul>
     {% endif %}
