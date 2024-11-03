@@ -1,0 +1,25 @@
+<!-- templates/task_groups.html -->
+{% extends "base.html" %}
+{% block title %}Your Task Groups{% endblock %}
+{% block content %}
+<h2>Your Task Groups</h2>
+<ul>
+    {% for group in groups %}
+    <li>
+        <strong>{{ group.title }}</strong>
+        <ul>
+            {% for task in group.tasks %}
+            <li>
+                {{ task.title }}
+                {% if task.is_completed %}
+                <span>(Completed)</span>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        <a href="{{ url_for('add_task', group_id=group.id) }}">Add Task</a>
+    </li>
+    {% endfor %}
+</ul>
+<p><a href="{{ url_for('create_task_group') }}">Create New Task Group</a></p>
+{% endblock %}

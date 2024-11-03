@@ -21,3 +21,21 @@ li ul.collapsed {
     display: none;
 }
 
+.task-containers {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.task-container {
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 30%;
+    background-color: #f9f9f9;
+}
+
+.task-container h4 {
+    margin-top: 0;
+    text-align: center;
+}
+
