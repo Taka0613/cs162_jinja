@@ -1,0 +1,19 @@
+{% for task in tasks %}
+<div class="task" id="task-{{ task.id }}">
+    <h4>{{ task.title }}</h4>
+    <a href="{{ url_for('auth.add_subtask', task_id=task.id) }}">Add Subtask</a>
+    {% if task.subtasks %}
+    <div class="subtasks">
+        {% for subtask in task.subtasks %}
+        <div class="subtask">
+            <h5>{{ subtask.title }}</h5>
+            <a href="{{ url_for('auth.add_subtask', task_id=subtask.id) }}">Add Subtask</a>
+            {% if subtask.subtasks %}
+            {% include "task_item.html" with context %}
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endfor %}

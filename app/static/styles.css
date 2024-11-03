@@ -20,13 +20,15 @@ body {
     width: 90%;
     max-width: 1200px;
     margin: auto;
+    padding: 1rem 0;
 }
 
 /* Header */
 .header {
     background-color: #4a90e2;
     color: #fff;
-    padding: 1rem 0;
+    padding: 1rem;
+    text-align: center;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -84,17 +86,30 @@ body {
     margin-bottom: 15px;
 }
 
-/* Footer */
-.footer {
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    padding: 1rem 0;
-    margin-top: auto;
-    font-size: 0.9rem;
+/* Toggle button */
+.toggler {
+    background: none;
+    border: none;
+    color: #666;
+    font-size: 1em;
+    cursor: pointer;
+    transition: color 0.3s;
+    margin-right: 5px;
 }
-.footer p {
-    margin: 0;
+
+.toggler:hover {
+    color: #333;
+}
+
+/* Toggleable children */
+ul {
+    list-style: none;
+}
+
+ul ul {
+    margin-left: 20px;
+    display: none;
+    transition: all 0.3s ease;
 }
 
 /* Buttons */
@@ -145,5 +160,19 @@ button:hover {
 .alert-error {
     background-color: #f8d7da;
     color: #721c24;
+}
+
+/* Footer */
+.footer {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 1rem 0;
+    margin-top: auto;
+    font-size: 0.9rem;
+}
+
+.footer p {
+    margin: 0;
 }
 

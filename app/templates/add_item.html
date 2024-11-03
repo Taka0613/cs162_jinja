@@ -1,6 +1,6 @@
-<!-- templates/add_item.html -->
 {% extends "base.html" %}
 {% block title %}Add Item to {{ list.title }}{% endblock %}
+
 {% block content %}
 <h2>Add Item to {{ list.title }}</h2>
 <form method="post">
@@ -13,7 +13,9 @@
         <select name="parent_item_id">
             <option value="">None (Top-level item)</option>
             {% for parent in parent_items %}
-            <option value="{{ parent.id }}">{{ parent.title }}</option>
+            <option value="{{ parent.id }}">
+                {% for i in range(parent.level) %}-{% endfor %} {{ parent.title }}
+            </option>
             {% endfor %}
         </select>
     </p>
