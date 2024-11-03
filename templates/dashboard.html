@@ -1,109 +1,69 @@
+<!-- templates/dashboard.html -->
 {% extends "base.html" %}
 {% block title %}Dashboard{% endblock %}
 
 {% macro render_subtasks(task) %}
 <div style="margin-left: 20px;">
     <button class="collapse-btn" onclick="toggleSubtasks({{ task.id }})">▼</button>
-    <span>{{ task.title }}</span>
+    <span>{{ task.title }} ({{ task.status }})</span>
     <form action="{{ url_for('delete_task', task_id=task.id) }}" method="POST" style="display: inline;">
         <button type="submit">Delete</button>
     </form>
-    <a href="{{ url_for('add_subtask', task_id=task.id) }}">Add Subtask</a>
+    {% if task.get_depth < 3 %} <a href="{{ url_for('add_subtask', task_id=task.id) }}">Add Subtask</a>
+        {% else %}
+        <span style="color: gray;">Max depth reached</span>
+        {% endif %}
 
-    {% if task.subtasks %}
-    <div class="subtasks" id="subtasks-{{ task.id }}" style="margin-left: 20px; display: none;">
-        {% for subtask in task.subtasks %}
-        {{ render_subtasks(subtask) }}
-        {% endfor %}
-    </div>
-    {% endif %}
+        {% if task.subtasks %}
+        <div class="subtasks" id="subtasks-{{ task.id }}" style="margin-left: 20px; display: none;">
+            {% for subtask in task.subtasks %}
+            {{ render_subtasks(subtask) }}
+            {% endfor %}
+        </div>
+        {% endif %}
 </div>
 {% endmacro %}
 
 {% block content %}
-
 <h1>Your Task Dashboard</h1>
 
 <div>
     <h2>Logged in as {{ current_user.username }} | <a href="{{ url_for('logout') }}">Logout</a></h2>
 </div>
 
-<div style="display: flex; gap: 20px;">
-    <!-- To Do Column -->
-    <div style="border: 1px solid #ccc; padding: 10px; width: 30%;">
-        <h3>To Do</h3>
-        {% for task in categorized_tasks['To Do'] %}
-        <div>
-            <button class="collapse-btn" onclick="toggleSubtasks({{ task.id }})">▼</button>
-            <span>{{ task.title }}</span>
-            <form action="{{ url_for('delete_task', task_id=task.id) }}" method="POST" style="display: inline;">
-                <button type="submit">Delete</button>
-            </form>
-            <a href="{{ url_for('add_subtask', task_id=task.id) }}">Add Subtask</a>
-
-            <!-- Render subtasks recursively -->
-            {% if task.subtasks %}
-            <div class="subtasks" id="subtasks-{{ task.id }}" style="margin-left: 20px; display: none;">
-                {% for subtask in task.subtasks %}
-                {{ render_subtasks(subtask) }}
-                {% endfor %}
-            </div>
-            {% endif %}
-        </div>
-        {% endfor %}
-        <a href="{{ url_for('add_task', status='To Do') }}">Add New Task</a>
-    </div>
-
-    <!-- In Progress Column -->
-    <div style="border: 1px solid #ccc; padding: 10px; width: 30%;">
-        <h3>In Progress</h3>
-        {% for task in categorized_tasks['In Progress'] %}
-        <div>
-            <button class="collapse-btn" onclick="toggleSubtasks({{ task.id }})">▼</button>
-            <span>{{ task.title }}</span>
-            <form action="{{ url_for('delete_task', task_id=task.id) }}" method="POST" style="display: inline;">
-                <button type="submit">Delete</button>
-            </form>
-            <a href="{{ url_for('add_subtask', task_id=task.id) }}">Add Subtask</a>
-
-            <!-- Render subtasks recursively -->
-            {% if task.subtasks %}
-            <div class="subtasks" id="subtasks-{{ task.id }}" style="margin-left: 20px; display: none;">
-                {% for subtask in task.subtasks %}
-                {{ render_subtasks(subtask) }}
-                {% endfor %}
-            </div>
-            {% endif %}
-        </div>
-        {% endfor %}
-        <a href="{{ url_for('add_task', status='In Progress') }}">Add New Task</a>
-    </div>
-
-    <!-- Done Column -->
-    <div style="border: 1px solid #ccc; padding: 10px; width: 30%;">
-        <h3>Done</h3>
-        {% for task in categorized_tasks['Done'] %}
-        <div>
-            <button class="collapse-btn" onclick="toggleSubtasks({{ task.id }})">▼</button>
-            <span>{{ task.title }}</span>
-            <form action="{{ url_for('delete_task', task_id=task.id) }}" method="POST" style="display: inline;">
-                <button type="submit">Delete</button>
-            </form>
-            <a href="{{ url_for('add_subtask', task_id=task.id) }}">Add Subtask</a>
-
-            <!-- Render subtasks recursively -->
-            {% if task.subtasks %}
-            <div class="subtasks" id="subtasks-{{ task.id }}" style="margin-left: 20px; display: none;">
-                {% for subtask in task.subtasks %}
-                {{ render_subtasks(subtask) }}
-                {% endfor %}
-            </div>
-            {% endif %}
-        </div>
-        {% endfor %}
-        <a href="{{ url_for('add_task', status='Done') }}">Add New Task</a>
-    </div>
+<div>
+    <h3><a href="{{ url_for('create_task_group') }}">Create New List</a></h3>
 </div>
+
+{% for group in task_groups %}
+<div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 20px;">
+    <h2>{{ group.title }}</h2>
+    <a href="{{ url_for('add_task', group_id=group.id) }}">Add New Task</a>
+    {% for task in group.tasks %}
+    {% if not task.parent_task_id %}
+    <div>
+        <button class="collapse-btn" onclick="toggleSubtasks({{ task.id }})">▼</button>
+        <span>{{ task.title }} ({{ task.status }})</span>
+        <form action="{{ url_for('delete_task', task_id=task.id) }}" method="POST" style="display: inline;">
+            <button type="submit">Delete</button>
+        </form>
+        {% if task.get_depth < 3 %} <a href="{{ url_for('add_subtask', task_id=task.id) }}">Add Subtask</a>
+            {% else %}
+            <span style="color: gray;">Max depth reached</span>
+            {% endif %}
+
+            {% if task.subtasks %}
+            <div class="subtasks" id="subtasks-{{ task.id }}" style="margin-left: 20px; display: none;">
+                {% for subtask in task.subtasks %}
+                {{ render_subtasks(subtask) }}
+                {% endfor %}
+            </div>
+            {% endif %}
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+{% endfor %}
 
 <script>
     function toggleSubtasks(taskId) {
@@ -118,5 +78,4 @@
         }
     }
 </script>
-
 {% endblock %}
