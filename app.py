@@ -52,6 +52,8 @@ class Task(db.Model):
     subtasks = db.relationship(
         "Task", backref=db.backref("parent_task", remote_side=[id]), lazy=True
     )
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    user = db.relationship("User", backref="tasks")
 
 
 @login_manager.user_loader
@@ -106,13 +108,17 @@ def logout():
 @app.route("/")
 @login_required
 def dashboard():
-    # Retrieve tasks categorized by status
+    # Retrieve tasks categorized by status for the current user
     categorized_tasks = {
-        "To Do": Task.query.filter_by(status="To Do", parent_task_id=None).all(),
-        "In Progress": Task.query.filter_by(
-            status="In Progress", parent_task_id=None
+        "To Do": Task.query.filter_by(
+            status="To Do", parent_task_id=None, user_id=current_user.id
         ).all(),
-        "Done": Task.query.filter_by(status="Done", parent_task_id=None).all(),
+        "In Progress": Task.query.filter_by(
+            status="In Progress", parent_task_id=None, user_id=current_user.id
+        ).all(),
+        "Done": Task.query.filter_by(
+            status="Done", parent_task_id=None, user_id=current_user.id
+        ).all(),
     }
     return render_template("dashboard.html", categorized_tasks=categorized_tasks)
 
@@ -121,7 +127,15 @@ def dashboard():
 @login_required
 def add_task(status):
     parent_task_id = request.args.get("parent_task_id")
-    parent_task = Task.query.get(parent_task_id) if parent_task_id else None
+    if parent_task_id:
+        parent_task = Task.query.filter_by(
+            id=parent_task_id, user_id=current_user.id
+        ).first()
+        if not parent_task:
+            flash("Parent task not found.")
+            return redirect(url_for("dashboard"))
+    else:
+        parent_task = None
 
     if request.method == "POST":
         title = request.form["title"]
@@ -131,7 +145,8 @@ def add_task(status):
         new_task = Task(
             title=title,
             status=status,
-            parent_task_id=parent_task_id,  # Set parent task if this is a subtask
+            parent_task_id=parent_task_id if parent_task_id else None,
+            user_id=current_user.id,  # Associate the task with the current user
         )
         db.session.add(new_task)
         db.session.commit()
@@ -143,11 +158,20 @@ def add_task(status):
 @app.route("/tasks/<int:task_id>/add_subtask", methods=["GET", "POST"])
 @login_required
 def add_subtask(task_id):
-    parent_task = Task.query.get_or_404(task_id)
+    parent_task = Task.query.filter_by(id=task_id, user_id=current_user.id).first()
+    if not parent_task:
+        flash("Parent task not found or you don't have permission.")
+        return redirect(url_for("dashboard"))
+
     if request.method == "POST":
         title = request.form["title"]
-        status = request.form.get("status", "To Do")
-        new_task = Task(title=title, status=status, parent_task_id=task_id)
+        status = request.form.get("status", parent_task.status)
+        new_task = Task(
+            title=title,
+            status=status,
+            parent_task_id=task_id,
+            user_id=current_user.id,  # Associate with the current user
+        )
         db.session.add(new_task)
         db.session.commit()
         return redirect(url_for("dashboard"))
@@ -157,11 +181,14 @@ def add_subtask(task_id):
     )
 
 
-# Delete a task and its subtasks
 @app.route("/tasks/<int:task_id>/delete", methods=["POST"])
 @login_required
 def delete_task(task_id):
-    task = Task.query.get_or_404(task_id)
+    task = Task.query.filter_by(id=task_id, user_id=current_user.id).first()
+    if not task:
+        flash("Task not found or you don't have permission to delete it.")
+        return redirect(url_for("dashboard"))
+
     db.session.delete(task)
     db.session.commit()
     return redirect(url_for("dashboard"))
