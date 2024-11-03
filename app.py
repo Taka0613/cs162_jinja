@@ -1,4 +1,15 @@
-from flask import Flask, render_template, redirect, url_for, request, flash
+import os
+from flask import (
+    Flask,
+    render_template,
+    redirect,
+    url_for,
+    request,
+    flash,
+    abort,
+    session,
+    jsonify,
+)
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import (
     LoginManager,
@@ -11,7 +22,9 @@ from flask_login import (
 from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "your_secret_key"
+app.config["SECRET_KEY"] = (
+    "42e76d8053493a28cc90a625d2315d2666da0c445351d01c5ddb8ba8aaa71f55"
+)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///todo.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
@@ -40,9 +53,7 @@ class TaskGroup(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(150), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-
-    # Use a unique backref name, like `task_group_tasks`
-    tasks = db.relationship("Task", backref="parent_group", lazy=True)
+    tasks = db.relationship("Task", backref="task_group", lazy=True)
 
 
 class Task(db.Model):
@@ -53,11 +64,12 @@ class Task(db.Model):
     task_group_id = db.Column(
         db.Integer, db.ForeignKey("task_group.id"), nullable=False
     )
-
-    # Task now references `parent_group` instead of `task_group`
     parent_task_id = db.Column(db.Integer, db.ForeignKey("task.id"), nullable=True)
     subtasks = db.relationship(
-        "Task", backref=db.backref("parent_task", remote_side=[id]), lazy=True
+        "Task",
+        backref=db.backref("parent_task", remote_side=[id]),
+        lazy=True,
+        cascade="all, delete-orphan",  # Enable cascading deletion of subtasks
     )
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     user = db.relationship("User", backref="tasks")
@@ -193,7 +205,7 @@ def add_subtask(task_id):
         return redirect(url_for("dashboard"))
 
     # Retrieve the task group from the parent task
-    task_group = parent_task.parent_group
+    task_group = parent_task.task_group  # Reference the related TaskGroup directly
 
     # Check the depth of the parent task
     if parent_task.get_depth >= 3:
@@ -223,14 +235,48 @@ def add_subtask(task_id):
 @app.route("/tasks/<int:task_id>/delete", methods=["POST"])
 @login_required
 def delete_task(task_id):
-    task = Task.query.filter_by(id=task_id, user_id=current_user.id).first()
-    if not task:
-        flash("Task not found or you don't have permission to delete it.")
-        return redirect(url_for("dashboard"))
+    verify_csrf_token()  # Custom CSRF verification function
 
+    task = Task.query.get_or_404(task_id)
     db.session.delete(task)
     db.session.commit()
     return redirect(url_for("dashboard"))
+
+
+def generate_csrf_token():
+    if "_csrf_token" not in session:
+        session["_csrf_token"] = os.urandom(16).hex()
+    return session["_csrf_token"]
+
+
+app.jinja_env.globals["csrf_token"] = generate_csrf_token
+
+
+def verify_csrf_token():
+    token = session.get("_csrf_token")
+    request_token = request.form.get("csrf_token") or request.headers.get("X-CSRFToken")
+    if not token or not request_token or token != request_token:
+        abort(400)
+
+
+@app.route("/move_task/<int:task_id>", methods=["POST"])
+@login_required
+def move_task(task_id):
+    verify_csrf_token()  # CSRF check
+
+    data = request.get_json()
+    new_group_id = data.get("new_group_id")
+
+    # Fetch task and check ownership
+    task = Task.query.filter_by(id=task_id, user_id=current_user.id).first()
+    if not task or task.parent_task_id is not None:  # Only top-level tasks can be moved
+        return jsonify({"error": "Task not found or cannot be moved."}), 400
+
+    # Update the task's group
+    task.task_group_id = new_group_id
+    db.session.commit()
+
+    return jsonify({"success": True}), 200
 
 
 # Initialize database tables if they don’t exist
