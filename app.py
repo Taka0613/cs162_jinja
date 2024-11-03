@@ -45,13 +45,9 @@ class TaskGroup(db.Model):
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(150), nullable=False)
-    status = db.Column(db.String(20), nullable=False, default="To Do")  # Status field
+    status = db.Column(db.String(20), nullable=False, default="To Do")
     is_completed = db.Column(db.Boolean, default=False)
-    task_group_id = db.Column(
-        db.Integer,
-        db.ForeignKey("task_group.id"),
-        nullable=True,  # Set nullable=True here
-    )
+    task_group_id = db.Column(db.Integer, db.ForeignKey("task_group.id"), nullable=True)
     parent_task_id = db.Column(db.Integer, db.ForeignKey("task.id"), nullable=True)
     subtasks = db.relationship(
         "Task", backref=db.backref("parent_task", remote_side=[id]), lazy=True
@@ -112,11 +108,11 @@ def logout():
 def dashboard():
     # Retrieve tasks categorized by status
     categorized_tasks = {
-        "To Do": Task.query.filter_by(status="To Do", task_group_id=None).all(),
+        "To Do": Task.query.filter_by(status="To Do", parent_task_id=None).all(),
         "In Progress": Task.query.filter_by(
-            status="In Progress", task_group_id=None
+            status="In Progress", parent_task_id=None
         ).all(),
-        "Done": Task.query.filter_by(status="Done", task_group_id=None).all(),
+        "Done": Task.query.filter_by(status="Done", parent_task_id=None).all(),
     }
     return render_template("dashboard.html", categorized_tasks=categorized_tasks)
 
@@ -124,22 +120,44 @@ def dashboard():
 @app.route("/add_task/<status>", methods=["GET", "POST"])
 @login_required
 def add_task(status):
+    parent_task_id = request.args.get("parent_task_id")
+    parent_task = Task.query.get(parent_task_id) if parent_task_id else None
+
     if request.method == "POST":
         title = request.form["title"]
-        # Save the new task with the chosen status
+        parent_task_id = request.form.get("parent_task_id")
+
+        # Create a new task and assign parent if it’s a subtask
         new_task = Task(
             title=title,
             status=status,
-            task_group_id=None,  # Adjust if task groups are needed
+            parent_task_id=parent_task_id,  # Set parent task if this is a subtask
         )
         db.session.add(new_task)
         db.session.commit()
         return redirect(url_for("dashboard"))
 
-    return render_template("add_task.html", status=status)
+    return render_template("add_task.html", status=status, parent_task=parent_task)
 
 
-# Delete a task
+@app.route("/tasks/<int:task_id>/add_subtask", methods=["GET", "POST"])
+@login_required
+def add_subtask(task_id):
+    parent_task = Task.query.get_or_404(task_id)
+    if request.method == "POST":
+        title = request.form["title"]
+        status = request.form.get("status", "To Do")
+        new_task = Task(title=title, status=status, parent_task_id=task_id)
+        db.session.add(new_task)
+        db.session.commit()
+        return redirect(url_for("dashboard"))
+
+    return render_template(
+        "add_task.html", status=parent_task.status, parent_task=parent_task
+    )
+
+
+# Delete a task and its subtasks
 @app.route("/tasks/<int:task_id>/delete", methods=["POST"])
 @login_required
 def delete_task(task_id):

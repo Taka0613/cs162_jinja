@@ -1,19 +1,22 @@
 {% extends "base.html" %}
 {% block title %}Add Task{% endblock %}
 {% block content %}
-<h2>Add Task ({{ status }})</h2>
+
+<h2>Add Task{% if parent_task %} as Subtask of "{{ parent_task.title }}"{% endif %} ({{ status }})</h2>
 
 <form action="{{ url_for('add_task', status=status) }}" method="post">
-    <!-- Task Title Input -->
     <div>
         <label for="title">Task Title:</label>
         <input type="text" name="title" id="title" required>
     </div>
 
-    <!-- Submission Button -->
+    {% if parent_task %}
+    <input type="hidden" name="parent_task_id" value="{{ parent_task.id }}">
+    {% endif %}
+
     <button type="submit">Add Task</button>
 </form>
 
-<!-- Navigation Link to Return to Dashboard -->
 <a href="{{ url_for('dashboard') }}">Back to Dashboard</a>
+
 {% endblock %}
