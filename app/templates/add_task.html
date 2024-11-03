@@ -1,15 +1,22 @@
-<!-- templates/add_task.html -->
+<!-- Extend the base template for a consistent layout -->
 {% extends "base.html" %}
-{% block title %}Add Task{% endblock %}
+{% block title %}Add Task{% endblock %} <!-- Set the page title as "Add Task" -->
 
 {% block content %}
-<h1>Add Task to {{ task_group.title }}</h1>
+<h1>Add Task to {{ task_group.title }}</h1> <!-- Header showing the task group name -->
+
+<!-- Form for adding a new task to a specified task group -->
 <form method="POST">
+    <!-- Input field for the task title, required for submission -->
     <label for="title">Task Title:</label>
     <input type="text" name="title" id="title" required>
+
+    <!-- If a parent task is specified, include its ID as a hidden field to assign the new task as a subtask -->
     {% if parent_task %}
     <input type="hidden" name="parent_task_id" value="{{ parent_task.id }}">
     {% endif %}
+
+    <!-- Submit button to add the task -->
     <button type="submit">Add Task</button>
 </form>
 {% endblock %}

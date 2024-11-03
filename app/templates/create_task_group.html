@@ -1,12 +1,18 @@
-<!-- templates/create_task_group.html -->
+<!-- Extend the base template for consistent layout across the app -->
 {% extends "base.html" %}
-{% block title %}Create Task Group{% endblock %}
+{% block title %}Create Task Group{% endblock %} <!-- Set the page title to "Create Task Group" -->
+
 {% block content %}
-<h2>Create New Task Group</h2>
+<h2>Create New Task Group</h2> <!-- Header indicating that this page is for creating a task group -->
+
+<!-- Form to create a new task group, posting data to the create_task_group route -->
 <form action="{{ url_for('auth.create_task_group') }}" method="post">
-    <label for="title">Task Group Title:</label>
+    <label for="title">Task Group Title:</label> <!-- Label for the task group title input -->
     <input type="text" id="title" name="title" required>
-    <button type="submit">Create Task Group</button>
+    <!-- Input field for the title, required for form submission -->
+    <button type="submit">Create Task Group</button> <!-- Button to submit the form and create the task group -->
 </form>
+
+<!-- Link to return to the dashboard page -->
 <p><a href="{{ url_for('auth.dashboard') }}">Back to Dashboard</a></p>
 {% endblock %}

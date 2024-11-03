@@ -1,15 +1,23 @@
-<!-- templates/list.html -->
+<!-- Extend the base template for consistent styling and layout -->
 {% extends "base.html" %}
-{% block title %}{{ list.title }}{% endblock %}
+{% block title %}{{ list.title }}{% endblock %} <!-- Set the page title dynamically based on the list title -->
+
 {% block content %}
-<h2>{{ list.title }}</h2>
+<h2>{{ list.title }}</h2> <!-- Header displaying the list title -->
+
+<!-- Display items in the list, using item.html template to handle each item and its potential children -->
 <ul>
     {% for item in items %}
     {% include 'item.html' with context %}
+    <!-- Include item.html template for each item, passing context for recursive rendering -->
     {% else %}
-    <li>No items yet.</li>
+    <li>No items yet.</li> <!-- Message displayed if there are no items in the list -->
     {% endfor %}
 </ul>
+
+<!-- Link to add a new item to the list -->
 <p><a href="{{ url_for('add_item', list_id=list.id) }}">Add New Item</a></p>
+
+<!-- Link to return to the dashboard -->
 <p><a href="{{ url_for('dashboard') }}">Back to Dashboard</a></p>
 {% endblock %}

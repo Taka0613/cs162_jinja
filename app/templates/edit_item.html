@@ -1,14 +1,21 @@
-<!-- templates/edit_item.html -->
+<!-- Extend the base template for consistent styling and layout -->
 {% extends "base.html" %}
 {% block title %}Edit Item - {{ item.title }}{% endblock %}
+<!-- Set the page title dynamically based on the item's title -->
+
 {% block content %}
-<h2>Edit Item - {{ item.title }}</h2>
+<h2>Edit Item - {{ item.title }}</h2> <!-- Header displaying the current item title -->
+
+<!-- Form to edit the item's title, posting data to the current route -->
 <form method="post">
     <p>
-        <label>Item Title:</label><br>
+        <label>Item Title:</label><br> <!-- Label for the item title input -->
         <input type="text" name="title" value="{{ item.title }}" required>
+        <!-- Pre-filled input with current title, required for submission -->
     </p>
-    <p><input type="submit" value="Update Item"></p>
+    <p><input type="submit" value="Update Item"></p> <!-- Submit button to update the item title -->
 </form>
+
+<!-- Link to go back to the parent list view -->
 <p><a href="{{ url_for('view_list', list_id=item.list.id) }}">Back to List</a></p>
 {% endblock %}

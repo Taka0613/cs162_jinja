@@ -1,13 +1,16 @@
-<!-- templates/create_list.html -->
+<!-- Extend the base template for a consistent layout across pages -->
 {% extends "base.html" %}
-{% block title %}Create New List{% endblock %}
+{% block title %}Create New List{% endblock %} <!-- Set the page title to "Create New List" -->
+
 {% block content %}
-<h2>Create New List</h2>
+<h2>Create New List</h2> <!-- Header indicating the purpose of the page -->
+
+<!-- Form for creating a new task list -->
 <form method="post">
     <p>
-        <label>List Title:</label><br>
-        <input type="text" name="title" required>
+        <label>List Title:</label><br> <!-- Label for the list title input -->
+        <input type="text" name="title" required> <!-- Input field for the list's title, required for submission -->
     </p>
-    <p><input type="submit" value="Create List"></p>
+    <p><input type="submit" value="Create List"></p> <!-- Submit button to create the list -->
 </form>
 {% endblock %}

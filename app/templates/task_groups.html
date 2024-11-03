@@ -1,25 +1,36 @@
-<!-- templates/task_groups.html -->
+<!-- Extend the base template for consistent styling and layout -->
 {% extends "base.html" %}
-{% block title %}Your Task Groups{% endblock %}
+{% block title %}Your Task Groups{% endblock %} <!-- Set the page title to "Your Task Groups" -->
+
 {% block content %}
-<h2>Your Task Groups</h2>
+<h2>Your Task Groups</h2> <!-- Header for the task groups page -->
+
+<!-- List all task groups -->
 <ul>
     {% for group in groups %}
     <li>
-        <strong>{{ group.title }}</strong>
+        <strong>{{ group.title }}</strong> <!-- Display the title of each task group -->
+
+        <!-- Nested list of tasks within each group -->
         <ul>
             {% for task in group.tasks %}
             <li>
-                {{ task.title }}
+                {{ task.title }} <!-- Display the task title -->
+
+                <!-- Indicate if the task is completed -->
                 {% if task.is_completed %}
                 <span>(Completed)</span>
                 {% endif %}
             </li>
             {% endfor %}
         </ul>
+
+        <!-- Link to add a new task to the current task group -->
         <a href="{{ url_for('add_task', group_id=group.id) }}">Add Task</a>
     </li>
     {% endfor %}
 </ul>
+
+<!-- Link to create a new task group -->
 <p><a href="{{ url_for('create_task_group') }}">Create New Task Group</a></p>
 {% endblock %}

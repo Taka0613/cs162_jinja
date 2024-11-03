@@ -1,24 +1,32 @@
-{% extends "base.html" %}
+{% extends "base.html" %} <!-- Extend the base template for consistent layout across pages -->
 {% block title %}Add Item to {{ list.title }}{% endblock %}
+<!-- Set the page title dynamically based on the list name -->
 
 {% block content %}
-<h2>Add Item to {{ list.title }}</h2>
+<h2>Add Item to {{ list.title }}</h2> <!-- Header displaying the list title -->
+
+<!-- Form to add a new item to the specified list -->
 <form method="post">
     <p>
-        <label>Item Title:</label><br>
+        <label>Item Title:</label><br> <!-- Label for item title input -->
         <input type="text" name="title" required>
+        <!-- Input field for the item's title, required for form submission -->
     </p>
     <p>
-        <label>Parent Item:</label><br>
+        <label>Parent Item:</label><br> <!-- Label for selecting a parent item (for hierarchical structure) -->
+
+        <!-- Dropdown menu to select a parent item, allowing hierarchical organization -->
         <select name="parent_item_id">
-            <option value="">None (Top-level item)</option>
+            <option value="">None (Top-level item)</option> <!-- Default option for top-level items without a parent -->
+
+            <!-- Loop through available parent items, displaying their titles with indentations based on hierarchy level -->
             {% for parent in parent_items %}
             <option value="{{ parent.id }}">
-                {% for i in range(parent.level) %}-{% endfor %} {{ parent.title }}
+                {% for i in range(parent.level) %}-{% endfor %} {{ parent.title }} <!-- Indent based on item's level -->
             </option>
             {% endfor %}
         </select>
     </p>
-    <p><input type="submit" value="Add Item"></p>
+    <p><input type="submit" value="Add Item"></p> <!-- Submit button to add the item -->
 </form>
 {% endblock %}

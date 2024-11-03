@@ -1,13 +1,23 @@
+<!-- Loop through each task in the tasks list -->
 {% for task in tasks %}
 <div class="task" id="task-{{ task.id }}">
-    <h4>{{ task.title }}</h4>
+    <h4>{{ task.title }}</h4> <!-- Display the task title -->
+
+    <!-- Link to add a subtask to the current task -->
     <a href="{{ url_for('auth.add_subtask', task_id=task.id) }}">Add Subtask</a>
+
+    <!-- If the task has subtasks, display them -->
     {% if task.subtasks %}
     <div class="subtasks">
+        <!-- Loop through each subtask under the current task -->
         {% for subtask in task.subtasks %}
         <div class="subtask">
-            <h5>{{ subtask.title }}</h5>
+            <h5>{{ subtask.title }}</h5> <!-- Display the subtask title -->
+
+            <!-- Link to add a subtask to the current subtask -->
             <a href="{{ url_for('auth.add_subtask', task_id=subtask.id) }}">Add Subtask</a>
+
+            <!-- If the current subtask has further nested subtasks, include this template again for recursive rendering -->
             {% if subtask.subtasks %}
             {% include "task_item.html" with context %}
             {% endif %}

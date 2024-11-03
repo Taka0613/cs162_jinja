@@ -1,17 +1,20 @@
-<!-- templates/login.html -->
+<!-- Extend the base template for consistent layout and styling -->
 {% extends "base.html" %}
-{% block title %}Login{% endblock %}
+{% block title %}Login{% endblock %} <!-- Set the page title to "Login" -->
+
 {% block content %}
-<h2>Login</h2>
+<h2>Login</h2> <!-- Header for the login page -->
+
+<!-- Form for user login, posting data to the server to verify credentials -->
 <form method="post">
     <p>
-        <label>Username:</label><br>
-        <input type="text" name="username" required>
+        <label>Username:</label><br> <!-- Label for the username input -->
+        <input type="text" name="username" required> <!-- Input field for the username, required for submission -->
     </p>
     <p>
-        <label>Password:</label><br>
-        <input type="password" name="password" required>
+        <label>Password:</label><br> <!-- Label for the password input -->
+        <input type="password" name="password" required> <!-- Input field for the password, required for submission -->
     </p>
-    <p><input type="submit" value="Login"></p>
+    <p><input type="submit" value="Login"></p> <!-- Submit button to log in -->
 </form>
 {% endblock %}

@@ -1,16 +1,24 @@
-<!-- templates/register.html -->
+<!-- Extend the base template for consistent styling and layout -->
 {% extends "base.html" %}
-{% block title %}Register{% endblock %}
+{% block title %}Register{% endblock %} <!-- Set the page title to "Register" -->
+
 {% block content %}
-<h2>Register</h2>
+<h2>Register</h2> <!-- Header for the registration page -->
+
+<!-- Registration form, posting data to the register route for creating a new user -->
 <form method="post" action="{{ url_for('auth.register') }}">
+    <!-- Input field for the username, required for submission -->
     <label for="username">Username:</label>
     <input type="text" id="username" name="username" required><br><br>
 
+    <!-- Input field for the password, required for submission -->
     <label for="password">Password:</label>
     <input type="password" id="password" name="password" required><br><br>
 
+    <!-- Submit button to complete registration -->
     <button type="submit">Register</button>
 </form>
+
+<!-- Link to log in if the user already has an account -->
 <p>Already have an account? <a href="{{ url_for('auth.login') }}">Log in here</a>.</p>
 {% endblock %}

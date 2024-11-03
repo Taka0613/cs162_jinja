@@ -1,13 +1,18 @@
-<!-- templates/edit_list.html -->
+<!-- Extend the base template for consistent styling and layout -->
 {% extends "base.html" %}
 {% block title %}Edit List - {{ list.title }}{% endblock %}
+<!-- Set the page title dynamically based on the list's title -->
+
 {% block content %}
-<h2>Edit List - {{ list.title }}</h2>
+<h2>Edit List - {{ list.title }}</h2> <!-- Header displaying the current list title -->
+
+<!-- Form to edit the list title, posting data to the current route -->
 <form method="post">
     <p>
-        <label>List Title:</label><br>
+        <label>List Title:</label><br> <!-- Label for the list title input -->
         <input type="text" name="title" value="{{ list.title }}" required>
+        <!-- Pre-filled input with current title, required for submission -->
     </p>
-    <p><input type="submit" value="Update List"></p>
+    <p><input type="submit" value="Update List"></p> <!-- Submit button to update the list title -->
 </form>
 {% endblock %}

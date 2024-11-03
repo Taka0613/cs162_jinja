@@ -5,47 +5,49 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}My To-Do App{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <!-- Dynamic title block, default set to "My To-Do App" -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}"> <!-- Link to main CSS file -->
 </head>
 
 <body>
 
-    <!-- Header -->
+    <!-- Header section with logo and navigation links -->
     <header class="header">
         <div class="container">
             <h1 class="logo">My To-Do App</h1>
             <nav class="nav">
+                <!-- Conditional navigation links based on user's authentication status -->
                 {% if current_user.is_authenticated %}
-                <a href="{{ url_for('auth.dashboard') }}">Dashboard</a>
-                <a href="{{ url_for('auth.logout') }}">Logout</a>
+                <a href="{{ url_for('auth.dashboard') }}">Dashboard</a> <!-- Link to dashboard if logged in -->
+                <a href="{{ url_for('auth.logout') }}">Logout</a> <!-- Link to logout -->
                 {% else %}
-                <a href="{{ url_for('auth.login') }}">Login</a>
-                <a href="{{ url_for('auth.register') }}">Register</a>
+                <a href="{{ url_for('auth.login') }}">Login</a> <!-- Link to login if not logged in -->
+                <a href="{{ url_for('auth.register') }}">Register</a> <!-- Link to register -->
                 {% endif %}
             </nav>
         </div>
     </header>
 
-    <!-- Flash Messages -->
+    <!-- Flash messages block for displaying notifications to the user -->
     {% with messages = get_flashed_messages(with_categories=True) %}
     {% if messages %}
     <div class="flash-messages container">
         {% for category, message in messages %}
-        <div class="alert alert-{{ category }}">{{ message }}</div>
+        <div class="alert alert-{{ category }}">{{ message }}</div> <!-- Flash message with category-based styling -->
         {% endfor %}
     </div>
     {% endif %}
     {% endwith %}
 
-    <!-- Main Content -->
+    <!-- Main content block, to be overridden by specific page content -->
     <main class="content container">
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Footer -->
+    <!-- Footer section with copyright information -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2024 My To-Do App. All rights reserved.</p>
+            <p>&copy; 2024 My To-Do App. All rights reserved.</p> <!-- Basic copyright statement -->
         </div>
     </footer>
 
