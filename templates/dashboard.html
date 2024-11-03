@@ -99,8 +99,6 @@
     }
 </script>
 
-{% endblock %}
-
 {% macro render_subtasks(task) %}
 <div style="margin-left: 20px;">
     <button class="collapse-btn" onclick="toggleSubtasks({{ task.id }})">▼</button>
@@ -119,3 +117,5 @@
     {% endif %}
 </div>
 {% endmacro %}
+
+{% endblock %}
