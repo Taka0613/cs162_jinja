@@ -1,5 +1,25 @@
 {% extends "base.html" %}
 {% block title %}Dashboard{% endblock %}
+
+{% macro render_subtasks(task) %}
+<div style="margin-left: 20px;">
+    <button class="collapse-btn" onclick="toggleSubtasks({{ task.id }})">▼</button>
+    <span>{{ task.title }}</span>
+    <form action="{{ url_for('delete_task', task_id=task.id) }}" method="POST" style="display: inline;">
+        <button type="submit">Delete</button>
+    </form>
+    <a href="{{ url_for('add_subtask', task_id=task.id) }}">Add Subtask</a>
+
+    {% if task.subtasks %}
+    <div class="subtasks" id="subtasks-{{ task.id }}" style="margin-left: 20px; display: none;">
+        {% for subtask in task.subtasks %}
+        {{ render_subtasks(subtask) }}
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endmacro %}
+
 {% block content %}
 
 <h1>Your Task Dashboard</h1>
@@ -19,7 +39,7 @@
             <form action="{{ url_for('delete_task', task_id=task.id) }}" method="POST" style="display: inline;">
                 <button type="submit">Delete</button>
             </form>
-            <a href="{{ url_for('add_task', status='To Do', parent_task_id=task.id) }}">Add Subtask</a>
+            <a href="{{ url_for('add_subtask', task_id=task.id) }}">Add Subtask</a>
 
             <!-- Render subtasks recursively -->
             {% if task.subtasks %}
@@ -44,7 +64,7 @@
             <form action="{{ url_for('delete_task', task_id=task.id) }}" method="POST" style="display: inline;">
                 <button type="submit">Delete</button>
             </form>
-            <a href="{{ url_for('add_task', status='In Progress', parent_task_id=task.id) }}">Add Subtask</a>
+            <a href="{{ url_for('add_subtask', task_id=task.id) }}">Add Subtask</a>
 
             <!-- Render subtasks recursively -->
             {% if task.subtasks %}
@@ -69,7 +89,7 @@
             <form action="{{ url_for('delete_task', task_id=task.id) }}" method="POST" style="display: inline;">
                 <button type="submit">Delete</button>
             </form>
-            <a href="{{ url_for('add_task', status='Done', parent_task_id=task.id) }}">Add Subtask</a>
+            <a href="{{ url_for('add_subtask', task_id=task.id) }}">Add Subtask</a>
 
             <!-- Render subtasks recursively -->
             {% if task.subtasks %}
@@ -100,22 +120,3 @@
 </script>
 
 {% endblock %}
-
-{% macro render_subtasks(task) %}
-<div style="margin-left: 20px;">
-    <button class="collapse-btn" onclick="toggleSubtasks({{ task.id }})">▼</button>
-    <span>{{ task.title }}</span>
-    <form action="{{ url_for('delete_task', task_id=task.id) }}" method="POST" style="display: inline;">
-        <button type="submit">Delete</button>
-    </form>
-    <a href="{{ url_for('add_task', status=task.status, parent_task_id=task.id) }}">Add Subtask</a>
-
-    {% if task.subtasks %}
-    <div class="subtasks" id="subtasks-{{ task.id }}" style="margin-left: 20px; display: none;">
-        {% for subtask in task.subtasks %}
-        {{ render_subtasks(subtask) }}
-        {% endfor %}
-    </div>
-    {% endif %}
-</div>
-{% endmacro %}
