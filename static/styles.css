@@ -39,3 +39,11 @@ li ul.collapsed {
     text-align: center;
 }
 
+.collapse-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+    color: #333;
+    margin-right: 5px;
+}
